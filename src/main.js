@@ -4,13 +4,19 @@ import { router } from './router/index';
 import { appRouter } from './router/router';
 import store from './store';
 import App from './app.vue';
+import axios from 'axios';
 import '@/locale';
 import 'iview/dist/styles/iview.css';
 import VueI18n from 'vue-i18n';
 import util from './libs/util';
 
+axios.defaults.baseURL = 'http://localhost:8081';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.withCredentials = true;
+Vue.prototype.$axios = axios;
 Vue.use(VueI18n);
 Vue.use(iView);
+// Vue.use('/api')
 
 new Vue({
     el: '#app',
@@ -19,9 +25,6 @@ new Vue({
     render: h => h(App),
     data: {
         currentPageName: ''
-    },
-    proxy: {
-        '/api': 'http://localhost:8081'
     },
     mounted () {
         this.currentPageName = this.$route.name;

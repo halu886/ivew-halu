@@ -1,7 +1,9 @@
 import Cookies from 'js-cookie';
 
 const user = {
-    state: {},
+    state: {
+        userInfo: {}
+    },
     mutations: {
         logout (state, vm) {
             Cookies.remove('user');
