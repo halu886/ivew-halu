@@ -153,7 +153,7 @@
                 <Card>
                     <p slot="title" class="card-title">
                         <Icon type="android-wifi"></Icon>
-                        任务完成统计
+                        任务进度统计
                     </p>
                     <div class="data-source-row">
                         <user-flow></user-flow>
