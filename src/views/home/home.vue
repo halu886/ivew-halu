@@ -165,7 +165,7 @@
             <Card>
                 <p slot="title" class="card-title">
                     <Icon type="ios-shuffle-strong"></Icon>
-                    上周每日任务操作量
+                    周日任务操作量
                 </p>
                 <div class="line-chart-con">
                     <service-requests></service-requests>
