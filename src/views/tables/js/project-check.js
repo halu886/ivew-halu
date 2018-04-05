@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
 export default {
     name: 'editable-table',
     components: {
@@ -8,23 +9,22 @@ export default {
         let projectColumn = [
             {
                 title: '名称',
-                key: 'Name',
-                fixed: 'left',
+                key: 'name',
                 sortable: true
             },
             {
                 title: '创建日期',
-                key: 'CreateDate',
+                key: 'createDate',
                 sortable: true
             },
             {
                 title: '剩余子任务',
-                key: 'unHandlerTask',
+                key: 'unHandleTask',
                 sortable: true
             },
             {
                 title: '待完成进度',
-                key: 'unHandlerProgress',
+                key: 'surplusProgress',
                 sortable: true
             },
             {
@@ -37,7 +37,6 @@ export default {
                 key: 'action',
                 width: 150,
                 align: 'center',
-                fixed: 'right',
                 render: (h, params) => {
                     return h('div', [
                         h('Button', {
@@ -50,7 +49,7 @@ export default {
                             },
                             on: {
                                 click: () => {
-                                    this.show(params.index)
+                                    // _moduleThis.show(params.index);
                                 }
                             }
                         }, 'View'),
@@ -61,28 +60,48 @@ export default {
                             },
                             on: {
                                 click: () => {
-                                    // TODO
-                                    // this.remove(params.index)
+
                                 }
                             }
                         }, 'Delete')
                     ]);
                 }
             }
-        ]
+        ];
         return {
             searchConName1: '',
             projectTotal: 0,
             pageSize: 10,
             pageNum: 1,
             projectData: [],
-            projectColumn: projectColumn
+            projectColumn: projectColumn,
+            projectForm: {
+                name: ''
+            }
         };
     },
     methods: {
+        okHandler () {
+            let _this = this;
+            axios.post('project/add', this.projectForm, {
+                ContentType: 'application/x-www-form-urlencoded'
+            }).then((response) => {
+                let data = response.data;
+                if (!data.status) {
+                    throw new Error('添加失败');
+                }
+                _this.$Modal.remove();
+            }).catch((e) => {
+                _this.$Modal.remove();
+                _this.$Message.error(e.stack);
+            });
+        },
+        cancelHandler () {
+            this.projectForm.name = '';
+        },
         rowClassName (row, index) {
             let item = row.item;
-            if (!item.status) {
+            if (item.unHandlerProgress !== 100) {
                 return 'table-unhandler-project';
             }
             return '';
@@ -100,20 +119,65 @@ export default {
             this.getData(this.pageSize, this.pageNum);
         },
         getData (size, page, searchParam) {
+            let _this = this;
             let params = { size: size, page: page };
             if (searchParam) params.searchParam = searchParam;
-            axios.get('/project/pageSelect', { params: params }).then((response) => {
+            axios.get('/project/table', { params: params }).then((response) => {
                 let data = response.data;
                 if (!data.status) {
                     throw new Error('查询异常');
                 }
-                this.projectTotal = data.total;
                 _.map(data.data, (item) => {
-                    item.
+                    let createDate = moment(item.createDate);
+                    let duration = moment.duration(moment() - createDate);
+                    item.useDate = duration.asDays().toFixed() + '天' + duration.hours() + '时' + duration.minutes() + '分';
+                    item.createDate = createDate.format('YYYY-MM-DD');
                 });
+                this.projectTotal = data.total;
                 this.projectData = data.data;
             }).catch((e) => {
-                this.$message.error({ content: e.stack, duration: 0, closable: true });
+                _this.$Message.error({ content: e.stack, duration: 0, closable: true });
+            });
+        },
+        handleRender () {
+            let _this = this;
+            _this.$Modal.confirm({
+                title: '新增项目',
+                okText: '提交',
+                cancelText: '取消',
+                loading: true,
+                closable: true,
+                render: (h) => {
+                    return h('Form', {
+                        props: {
+                            // model: this.projectForm,
+                            labelPosition: 'left',
+                            labelWidth: 100
+                        }
+                    },
+                    [
+                        h('FormItem', {
+                            props: {
+                                label: '项目名称'
+                            }
+                        }, [
+                            h('Input', {
+                                props: {
+                                    value: this.projectForm.name,
+                                    autofocus: true,
+                                    placeholder: 'Please enter your name...'
+                                },
+                                on: {
+                                    input: (val) => {
+                                        this.projectForm.name = val;
+                                    }
+                                }
+                            })
+                        ])
+                    ]);
+                },
+                onOk: _this.okHandler,
+                onCancel: _this.cancelHandler
             });
         }
     },

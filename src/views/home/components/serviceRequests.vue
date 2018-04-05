@@ -122,7 +122,7 @@ export default {
         });
       })
       .catch(e => {
-        this.$message.error({ content: e.stack, duration: 0, closable: true });
+        this.$Message.error({ content: e.stack, duration: 0, closable: true });
       });
   }
 };

@@ -73,7 +73,8 @@ export const appRouter = [
         title: '项目管理',
         component: Main,
         children: [
-            { path: 'projectTable', title: '项目详情', name: 'project-table', icon: 'edit', component: () => import('@/views/tables/project-table.vue') },
+            { path: 'projectCheck', title: '项目详情', name: 'project-check', icon: 'search', component: () => import('@/views/tables/project-check.vue') },
+            // { path: 'projectOperation', title: '项目新增', name: 'project-operation', icon: 'arrow-move', component: () => import('@/views/tables/project-operation.vue') },
             { path: 'editableTable', title: '编辑表单', name: 'editable-table', icon: 'edit', component: () => import('@/views/tables/editable-table.vue') },
             { path: 'dragableTable', title: '可拖拽排序', name: 'dragable-table', icon: 'arrow-move', component: () => import('@/views/tables/dragable-table.vue') },
             { path: 'searchableTable', title: '可搜索表格', name: 'searchable-table', icon: 'search', component: () => import('@/views/tables/searchable-table.vue') },
@@ -81,6 +82,7 @@ export const appRouter = [
             { path: 'table2image', title: '表格转图片', name: 'table-to-image', icon: 'images', component: () => import('@/views/tables/table-to-image.vue') }
         ]
     },
+    {},
     {
         path: '/access',
         icon: 'key',
