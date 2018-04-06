@@ -82,7 +82,16 @@ export const appRouter = [
             { path: 'table2image', title: '表格转图片', name: 'table-to-image', icon: 'images', component: () => import('@/views/tables/table-to-image.vue') }
         ]
     },
-    {},
+    {
+        path: '/tasks',
+        icon: 'ios-grid-view',
+        name: 'tasks',
+        title: '任务管理',
+        component: Main,
+        children: [
+            { path: 'taskCheck', title: '任务详情', name: 'task-check', icon: 'search', component: () => import('@/views/task/task-check.vue') }
+        ]
+    },
     {
         path: '/access',
         icon: 'key',
