@@ -1,5 +1,145 @@
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
+const nameRule = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('不能为空'));
+    }
+};
+const progressRule = () => { };
+const rootTaskRule = {
+    name: [{ validator: nameRule, trigger: 'blur' }],
+    progress: [{ validator: progressRule, trigger: 'blue' }]
+};
+let taskModalConfig = {
+    render: (h) => {
+        return h('form', { rules: rootTaskRule }, [
+            h('formItem', { label: '名称', prop: 'name' }, [h('input', {})]),
+            h('formItem', { label: '描述', prop: 'description' }, [h('textarea', {})]),
+            h('formItem', { label: '开始时间', prop: 'startDate' }, [h('TimePicker ', { type: 'time', format: 'YYYY-MM-DD HH:mm' })]),
+            h('formItem', { label: '结束时间', prop: 'endDate' }, [h('TimePicker ', { type: 'time', format: 'YYYY-MM-DD HH:mm' })])
+        ]);
+    }
+};
+
+function append (data) {
+    let _this = this;
+    let t = data.t;
+    let modalConfig = {};
+    let pTaskStart = moment(data.startDate) || moment().subtract(10, 'years');
+    let PTaskEnd = moment(data.endDate) || moment().add(10, 'year');
+    if (t.taskType === 'T') {
+        let inputCount = 0;
+        let taskTypes = ['P', 'D', 'C', 'A'];
+        let task = {};
+        let taskList = [];
+        if (data.children.length !== 0) {
+            _this.$Message.error('该任务不能添加子任务');
+            return;
+        }
+        const startDateRule = (rule, value, callback) => {
+            let startDate = moment(value, 'YYYY-MM-DD HH:mm');
+            let type = task.type;
+            let indexType = taskTypes.indexOf(type);
+            let preTypeIndex = --indexType;
+            let preTaskEndDate = taskList[preTypeIndex].endDate;
+            if (startDate.isBefore(pTaskStart)) {
+                callback(new Error('起始时间小于父任务起始时间'));
+            } else if (indexType !== 0) {
+                if (startDate.isBefore(preTaskEndDate)) {
+                    callback(new Error('开始时间小于前置任务起始时间'));
+                }
+            }
+        };
+        const endDateRule = (rule, value, callback) => {
+            let endDate = moment(value, 'YYYY-MM-DD HH:mm');
+            if (endDate.isBefore(PTaskEnd)) {
+                callback(new Error('起始时间小于父任务起始时间'));
+            }
+        };
+        let taskRule = {
+            name: [{ validator: nameRule, trigger: 'blur' }],
+            startDate: [{ validator: startDateRule, trigger: 'blur' }],
+            endDate: [{ validator: endDateRule, trigger: 'blur' }]
+        };
+        modalConfig.render = (h) => {
+            return h('form', { rules: taskRule }, [
+                h('formItem', { label: '类型', disabled: true, prop: 'taskType' }, [h('input', {})]),
+                h('formItem', { label: '名称', prop: 'name' }, [h('input', {})]),
+                h('formItem', { label: '描述', prop: 'description' }, [h('textarea', {})]),
+                h('formItem', { label: '开始时间', prop: 'startDate' }, [h('TimePicker ', { type: 'time', format: 'YYYY-MM-DD HH:mm' })]),
+                h('formItem', { label: '结束时间', prop: 'endDate' }, [h('TimePicker ', { type: 'time', format: 'YYYY-MM-DD HH:mm' })])
+            ]);
+        };
+        modalConfig.onOk = () => {
+            let taskType = taskTypes[inputCount];
+            // let taskStartDate = moment(task.startDate);
+            // let taskEndDate = moment(task.endDate);
+            let preTask;
+            // if (inputCount !== 0) {
+            //     preTask = _.clone(taskList[inputCount - 1]);
+            //     let preEndDate = moment(preTask.endDate, 'YYYY-MM-DD HH:mm');
+            //     if (preEndDate.isAfter(taskStartDate)) {
+            //         _this.$Message.error({ content: '时间验证错误' });
+            //         return;
+            //     }
+            // }
+            // if (taskEndDate.isAfter(PTaskEnd) || taskStartDate.isBefore(pTaskStart)) {
+            //     _this.$Message.error({ content: '时间验证错误' });
+            //     return;
+            // }
+            taskList.push(preTask);
+            task.name = '';
+            task.description = '';
+            task.moment = moment.form('YYYY-MM-DD HH:mm');
+            task.type = taskType;
+            if (inputCount === 3) {
+                axios.post('task/add', taskList).then((res) => {
+                    let data = res.data;
+                    if (!data.status) {
+                        throw new Error('添加异常');
+                    }
+                    _this.$Message.info('添加成功');
+                    _this.$Modal.remove();
+                }).then((e) => {
+                    _this.$Message.error({ content: '添加失败' });
+                });
+            }
+        };
+    } else {
+
+    }
+
+    // axios.get(`/task/add/${data.t.type}`, { params: { taskId: data.t.id } }).then((response) => {
+    //     let data = response.data;
+    //     if (!data.status) {
+    //         throw new Error('添加失败');
+    //     }
+    //     if (!data.canAdd) {
+    //         _this.$Message.infor('不能添加');
+    //         return;
+    //     }
+    //     const children = data.children || [];
+    //     children.push({
+    //         title: 'appended node',
+    //         expand: true
+    //     });
+    //     _this.$set(data, 'children', children);
+    // }).catch();
+}
+
+function addRootTask () {
+    let rootTask = _.clone(this.task);
+    let progressSum = 0;
+    _.forEach(rootTask, (t) => {
+        progressSum += t.progress;
+    });
+    if (progressSum >= 100) {
+        this.$Message.error('根任务添加失败');
+        return;
+    }
+    this.$Modal.confirm(taskModalConfig);
+}
 export default {
     name: 'task-check',
     components: {
@@ -87,25 +227,7 @@ export default {
                 ])
             ]);
         },
-        append (data) {
-            let _this = this;
-            axios.get('/task/canAdd').then((response) => {
-                let data = response.data;
-                if (!data.status) {
-                    throw new Error('添加失败');
-                }
-                if (!data.canAdd) {
-                    _this.$Message.infor('不能添加');
-                    return;
-                }
-                const children = data.children || [];
-                children.push({
-                    title: 'appended node',
-                    expand: true
-                });
-                _this.$set(data, 'children', children);
-            }).catch();
-        },
+        append,
         remove (root, node, data) {
             let _this = this;
             this.$Modal.info({
@@ -156,7 +278,8 @@ export default {
                 }
                 _this.task = taskData.data;
             });
-        }
+        },
+        addRootTask
     },
     created () {
         this.getData();
