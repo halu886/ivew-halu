@@ -6,81 +6,110 @@ export default {
     components: {
     },
     data () {
-        let projectColumn = [
-            {
-                title: '名称',
-                key: 'name',
-                sortable: true
-            },
-            {
-                title: '创建日期',
-                key: 'createDate',
-                sortable: true
-            },
-            {
-                title: '剩余子任务',
-                key: 'unHandleTask',
-                sortable: true
-            },
-            {
-                title: '待完成进度',
-                key: 'surplusProgress',
-                sortable: true
-            },
-            {
-                title: '已耗时长',
-                key: 'useDate',
-                sortable: true
-            },
-            {
-                title: 'Action',
-                key: 'action',
-                width: 150,
-                align: 'center',
-                render: (h, params) => {
-                    return h('div', [
-                        h('Button', {
-                            props: {
-                                type: 'primary',
-                                size: 'small'
-                            },
-                            style: {
-                                marginRight: '5px'
-                            },
-                            on: {
-                                click: () => {
-                                    // _moduleThis.show(params.index);
-                                }
-                            }
-                        }, 'View'),
-                        h('Button', {
-                            props: {
-                                type: 'error',
-                                size: 'small'
-                            },
-                            on: {
-                                click: () => {
-
-                                }
-                            }
-                        }, 'Delete')
-                    ]);
-                }
-            }
-        ];
+        let _this = this;
         return {
             searchConName1: '',
             projectTotal: 0,
             pageSize: 10,
             pageNum: 1,
             projectData: [],
-            projectColumn: projectColumn,
+            projectColumn: [
+                {
+                    title: '名称',
+                    key: 'name',
+                    sortable: true
+                },
+                {
+                    title: '创建日期',
+                    key: 'createDate',
+                    sortable: true
+                },
+                {
+                    title: '剩余子任务',
+                    key: 'unHandleTask',
+                    sortable: true
+                },
+                {
+                    title: '待完成进度',
+                    key: 'surplusProgress',
+                    sortable: true
+                },
+                {
+                    title: '已耗时长',
+                    key: 'useDate',
+                    sortable: true
+                },
+                {
+                    title: 'Action',
+                    key: 'action',
+                    width: 150,
+                    align: 'center',
+                    render: (h, params) => {
+                        return h('div', [
+                            h('Button', {
+                                props: {
+                                    type: 'primary',
+                                    size: 'small'
+                                },
+                                style: {
+                                    marginRight: '5px'
+                                },
+                                on: {
+                                    click: () => {
+                                        this.$Message.info({
+                                            title: 'Project Info',
+                                            content: `名称：${this.projectData[params.index].name}
+                                            <br>创建日期：${this.projectData[params.index].createDate}
+                                            <br>剩余子任务${this.projectData[params.index].unHandleTask}
+                                            <br>待完成进度${this.projectData[params.index].surplusProgress}
+                                            <br>已耗时长${this.projectData[params.index].useDate}`
+                                        });
+                                    }
+                                }
+                            }, 'View'),
+                            h('Button', {
+                                props: {
+                                    type: 'error',
+                                    size: 'small'
+                                },
+                                on: {
+                                    click: () => {
+                                        let index = params.index;
+                                        axios.delete('/project/deleteById', { params: { id: _this.projectData[index].projectID } }).then((response) => {
+                                            let data = response.data;
+                                            if (!data.status) {
+                                                throw new Error('项目删除失败');
+                                            }
+                                            _this.getData(_this.pageSize, _this.pageNum);
+                                        }).catch((e) => {
+                                            _this.$Message.error({ content: e.stack, duration: 0, closable: true });
+                                        });
+                                    }
+                                }
+                            }, 'Delete')
+                        ]);
+                    }
+                }
+            ],
             projectForm: {
                 name: ''
             }
         };
     },
     methods: {
+        viewItem: (index) => {
+            this.$Message.info({
+                title: 'Project Info',
+                content: `名称：${this.projectData[index].name}
+                <br>创建日期：${this.projectData[index].createDate}
+                <br>剩余子任务${this.projectData[index].unHandleTask}
+                <br>待完成进度${this.projectData[index].surplusProgress}
+                <br>已耗时长${this.projectData[index].useDate}`
+            });
+        },
+        removeItem: (index) => {
+
+        },
         okHandler () {
             let _this = this;
             axios.post('project/add', this.projectForm, {
