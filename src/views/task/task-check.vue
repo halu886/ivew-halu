@@ -7,15 +7,17 @@
         <Row>
             <Col span="5">
             <Card>
-                <Row>
+                <Row :gutter="16">
                     <Col span="18">
-                    <Select v-model="selectProject" style="width:200px" @on-change="changeHandler" label-in-value>
+                    <Select v-model="selectProject" @on-change="changeHandler" label-in-value>
                         <Option v-for="item in projects" :value="item.projectID" :label="item.name" :key="item.projectID">{{item.name}}</Option>
                     </Select>
                     </Col>
                     <Col span="6">
-                    <button value="新增根任务" @click="addRootTask" />
+                    <Button type="ghost" shape="circle" icon="plus" @click="appendHandler"></Button>
                     </Col>
+                </Row>
+                <Row>
                     <Tree ref="taskTree" :data="task" :render="renderTaskTree" @on-select-change="treeSelectHandler"></Tree>
                 </Row>
             </Card>

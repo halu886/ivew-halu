@@ -7,6 +7,22 @@ export default {
     },
     data () {
         let _this = this;
+        const validateName = (rule, value, callback) => {
+            if (!value) callback(new Error('名称不能为空'));
+            callback();
+        };
+        // const validateStartDate = (rule, value, callback) => {
+        //     let startMoment = moment(value);
+        //     let endMoment = moment(_this.projectForm.endDate);
+        //     if (startMoment.isBefore(moment())) callback(new Error('开始时间不能早于当前时间'));
+        //     if (startMoment.isAfter(endMoment)) callback(new Error('开始不能晚于结束时间'));
+        //     callback();
+        // };
+        // const validateEndDate = (rule, value, callback) => {
+        //     let endMoment = moment(value);
+        //     let startMoment = moment(_this.projectForm.startDate);
+        //     if (startMoment.isAfter(endMoment)) callback(new Error('结束时间不能早于开始时间'));
+        // };
         return {
             searchConName1: '',
             projectTotal: 0,
@@ -93,6 +109,13 @@ export default {
             ],
             projectForm: {
                 name: ''
+                // startDate: new Date(),
+                // endDate: new Date()
+            },
+            ruleCustom: {
+                name: [{ validator: validateName, trigger: 'blur' }]
+                // startDate: [{ validator: validateStartDate, trigger: 'blur' }],
+                // endDate: [{ validator: validateEndDate, trigger: 'blur' }]
             }
         };
     },
@@ -112,6 +135,7 @@ export default {
         },
         okHandler () {
             let _this = this;
+            if (!this.projectForm.name) { _this.$Message.error('名称不能为空'); }
             axios.post('project/add', this.projectForm, {
                 ContentType: 'application/x-www-form-urlencoded'
             }).then((response) => {
@@ -177,36 +201,24 @@ export default {
                 loading: true,
                 closable: true,
                 render: (h) => {
-                    return h('Form', {
-                        props: {
-                            // model: this.projectForm,
-                            labelPosition: 'left',
-                            labelWidth: 100
-                        }
-                    },
-                    [
-                        h('FormItem', {
-                            props: {
-                                label: '项目名称'
-                            }
-                        }, [
-                            h('Input', {
-                                props: {
-                                    value: this.projectForm.name,
-                                    autofocus: true,
-                                    placeholder: 'Please enter your name...'
-                                },
+                    return h('Form', { props: { labelPosition: 'left', model: _this.projectForm, labelWidth: 100, rules: _this.ruleCustom }, ref: 'projectForm' },
+                        [
+                            h('FormItem', { props: { label: '项目名称', prop: 'name' } }, [h('Input', {
+                                props: { model: _this.projectForm.name, autofocus: true, placeholder: 'Please enter your name...' },
                                 on: {
                                     input: (val) => {
-                                        this.projectForm.name = val;
+                                        _this.projectForm.name = val;
                                     }
                                 }
-                            })
-                        ])
-                    ]);
+                            }
+                            )])
+                            // h('FormItem', { props: { label: '开始时间' } }, [h('DatePicker', { props: { prop: 'startDate', type: 'datetime', format: 'yyyy-MM-dd HH:mm' } })]),
+                            // h('FormItem', { props: { label: '结束时间' } }, [h('DatePicker', { props: { prop: 'endDate', type: 'datetime', format: 'yyyy-MM-dd HH:mm' } })])
+                        ]);
                 },
-                onOk: _this.okHandler,
-                onCancel: _this.cancelHandler
+                onOk: () => {
+                    _this.okHandler();
+                }
             });
         }
     },
