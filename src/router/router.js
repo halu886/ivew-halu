@@ -10,6 +10,14 @@ export const loginRouter = {
     component: () => import('@/views/login.vue')
 };
 
+export const page401 = {
+    path: '/401',
+    name: 'error-401',
+    meta: {
+        title: '404-用户已失效'
+    },
+    component: () => import('@/views/error-page/401.vue')
+};
 export const page404 = {
     path: '/*',
     name: 'error-404',
@@ -246,5 +254,6 @@ export const routers = [
     ...appRouter,
     page500,
     page403,
-    page404
+    page404,
+    page401
 ];

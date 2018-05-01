@@ -92,7 +92,9 @@ export default {
                     _this.task = result.data.task;
                     _this.project = result.data.project;
                 }
-            }).catch((e) => { alert(e); });
+            }).catch((e) => {
+                // alert(e);
+            });
         }
     },
     created: function () {

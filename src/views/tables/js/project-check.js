@@ -11,19 +11,8 @@ export default {
             if (!value) callback(new Error('名称不能为空'));
             callback();
         };
-        // const validateStartDate = (rule, value, callback) => {
-        //     let startMoment = moment(value);
-        //     let endMoment = moment(_this.projectForm.endDate);
-        //     if (startMoment.isBefore(moment())) callback(new Error('开始时间不能早于当前时间'));
-        //     if (startMoment.isAfter(endMoment)) callback(new Error('开始不能晚于结束时间'));
-        //     callback();
-        // };
-        // const validateEndDate = (rule, value, callback) => {
-        //     let endMoment = moment(value);
-        //     let startMoment = moment(_this.projectForm.startDate);
-        //     if (startMoment.isAfter(endMoment)) callback(new Error('结束时间不能早于开始时间'));
-        // };
         return {
+            preSearchConName: '',
             searchConName1: '',
             projectTotal: 0,
             pageSize: 10,
@@ -160,8 +149,10 @@ export default {
             return '';
         },
         handleSearch (event) {
-            let searchParam = event.data;
-            this.getData(this.pageSize, this.pageNum, searchParam);
+            if (this.preSearchConName !== this.searchConName1) {
+                this.preSearchConName = this.searchConName1;
+                this.getData(this.pageSize, this.pageNum, this.searchConName1);
+            }
         },
         sizeChange (size) {
             this.pageSize = size;

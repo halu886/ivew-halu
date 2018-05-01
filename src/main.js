@@ -13,12 +13,35 @@ import util from './libs/util';
 axios.defaults.baseURL = 'http://localhost:8081';
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.withCredentials = true;
+axios.interceptors.response.use((response) => {
+    // console.log(21);
+    return response;
+}, (e) => {
+    let state = e.response ? e.response.status || '' : '';
+    let name = '';
+    if (state === 500) {
+        name = 'error-500';
+    } else if (state === 403) {
+        name = 'error-403';
+    } else if (state === 401) {
+        name = 'error-401';
+    } else if (state === 404) {
+        name = 'error-404';
+    }
+    if (name) {
+        vue.$router.push({
+            name: name
+        });
+        return Promise.reject(e);
+    }
+    return Promise.reject(e);
+});
 Vue.prototype.$axios = axios;
 Vue.use(VueI18n);
 Vue.use(iView);
 // Vue.use('/api')
 
-new Vue({
+let vue = new Vue({
     el: '#app',
     router: router,
     store: store,

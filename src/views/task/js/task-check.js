@@ -23,8 +23,38 @@ export default {
             selectProject: '',
             task: [],
             showTask: {
-                name: '',
-                description: ''
+                createDate:
+                    '',
+                description:
+                    '',
+                endDate:
+                    '',
+                id:
+                    '',
+                name:
+                    '',
+                nodeProgress:
+                    '',
+                progress:
+                    '',
+                projectId:
+                    '',
+                ptaskId:
+                    '',
+                startDate:
+                    '',
+                tags:
+                    '',
+                taskId:
+                    '',
+                taskName:
+                    '',
+                taskType:
+                    '',
+                tno:
+                    '',
+                updateDate:
+                    ''
             },
             buttonProps: {
                 type: 'ghost',
@@ -151,38 +181,37 @@ export default {
         };
     },
     methods: {
-        treeSelectHandler (items) {
-            let item = items[0];
-            let _this = this;
-            if (!item) {
-                this.$Message.error({ content: '无效选中', duration: 0, closable: true });
-                return;
+        treeSelectHandler (item) {
+            let t = item.t;
+            for (let key in t) {
+                this.showTask[key] = t[key] || '';
             }
-            axios.get('/task/findById', { params: { taskID: item.taskId } }).then((response) => {
-                let data = response.data;
-                if (!data.status) {
-                    _this.$Message.error({ content: '查询失败', duration: 0 });
-                }
-            }).catch(() => { });
         },
         renderTaskTree (h, { root, node, data }) {
+            let _this = this;
             return h('span', {
                 style: {
                     display: 'inline-block',
                     width: '100%'
                 }
             }, [
-                h('span', [
-                    h('Icon', {
-                        props: {
-                            type: 'ios-paper-outline'
-                        },
-                        style: {
-                            marginRight: '8px'
+                h('span',
+                    {
+                        on: {
+                            click: () => { _this.treeSelectHandler(data); }
                         }
-                    }),
-                    h('span', data.title)
-                ]),
+                    },
+                    [
+                        h('Icon', {
+                            props: {
+                                type: 'ios-paper-outline'
+                            },
+                            style: {
+                                marginRight: '8px'
+                            }
+                        }),
+                        h('span', data.title)
+                    ]),
                 h('span', {
                     style: {
                         display: 'inline-block',
@@ -219,6 +248,9 @@ export default {
                     })
                 ])
             ]);
+        },
+        titleClickHandler (a, b, c, d) {
+            console.log(this, a, b, c, d);
         },
         appendHandler (e, data) {
             let _rootThis = this;
@@ -443,6 +475,18 @@ export default {
                 let data = res.data;
                 if (!data.status) {
                     throw new Error('添加失败');
+                }
+                _this.getData();
+            }).catch((e) => {
+                _this.$Message.error({ content: e.stack, duration: 0, closable: true });
+            });
+        },
+        overTask () {
+            let _this = this;
+            axios.put(`/task/overTask/${this.showTask.taskId}`).then((res) => {
+                let data = res.data;
+                if (!data.status) {
+                    throw new Error('操作异常');
                 }
                 _this.getData();
             }).catch((e) => {
