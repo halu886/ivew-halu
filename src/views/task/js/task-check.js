@@ -1,15 +1,8 @@
 import axios from 'axios';
 import _ from 'lodash';
 import moment from 'moment';
-const nameRule = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('不能为空'));
-    }
-};
-const progressRule = () => { };
 const rootTaskRule = {
-    name: [{ validator: nameRule, trigger: 'blur' }],
-    progress: [{ validator: progressRule, trigger: 'blue' }]
+    name: [{ required: true, message: 'The name cannot be empty', trigger: 'blur' }]
 };
 
 export default {
@@ -131,7 +124,17 @@ export default {
             taskModalConfig: {
                 render: (h) => {
                     _this.nTask.projectId = _this.selectProject;
-                    return h('Form', { props: { labelPosition: 'left', labelWidth: 80, rules: rootTaskRule } }, [
+                    return h('Form', {
+                        props: {
+                            labelPosition: 'left',
+                            labelWidth: 80,
+                            model: _this.nTask,
+                            rules: {
+                                name: [{ required: true, message: 'The name cannot be empty', trigger: ['blur'] }]
+                            }
+                        }
+                    },
+                    [
                         h('FormItem', { props: { label: '名称', prop: 'name' } }, [h('Input', { props: { value: _this.nTask.name }, on: { input: (val) => { _this.nTask.name = val; } } })]),
                         h('FormItem', { props: { prop: 'progress', label: '进度' } }, [h('InputNumber', { props: { max: 100, min: 0, value: _this.nTask.progress }, on: { input: (val) => { _this.nTask.progress = val; } } })]),
                         h('FormItem', { props: { prop: 'description', label: '描述' } }, [h('Input', { props: { type: 'textarea', value: _this.nTask.description }, on: { input: (val) => { this.nTask.description = val; } } })]),
@@ -142,39 +145,34 @@ export default {
             },
             typeTaskModalConfig: {
                 render: (h) => {
-                    // _this.typeTasks[0].projectId = _this.selectProject;
                     for (let i = 0; i < 4; i++) {
                         _this.typeTasks[i].projectId = _this.selectProject;
                     }
-                    return h('Form', { props: { labelPosition: 'left', labelWidth: 80 } }, [
-                        // // P
-                        h('FormItem', { props: { label: '类型' } }, [h('Input', { props: { value: _this.typeTasks[0].type }, on: { input: (val) => { _this.typeTasks[0].type = val; } } })]),
-                        h('FormItem', { props: { label: '名称' } }, [h('Input', { props: { value: _this.typeTasks[0].name }, on: { input: (val) => { _this.typeTasks[0].name = val; } } })]),
+                    return h('Form', { props: { labelPosition: 'top', inline: true } }, [
+                        // P
+                        h('FormItem', { props: { label: '类型' } }, [h('Badge', { props: { count: _this.typeTasks[0].type } })]),
+                        h('FormItem', { props: { label: '名称', prop: 'name' } }, [h('Input', { props: { value: _this.typeTasks[0].name }, on: { input: (val) => { _this.typeTasks[0].name = val; } } })]),
                         h('FormItem', { props: { label: '进度' } }, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[0].progress }, on: { input: (val) => { _this.typeTasks[0].progress = val; } } })]),
-                        h('FormItem', { props: { label: '描述' } }, [h('Input', { props: { type: 'textarea', value: _this.typeTasks[0].description }, on: { input: (val) => { _this.typeTasks[0].description = val; } } })]),
                         h('FormItem', { props: { label: '开始时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[0].startDate }, on: { input: (val) => { _this.typeTasks[0].startDate = val; } } })]),
                         h('FormItem', { props: { label: '结束时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[0].endDate }, on: { input: (val) => { _this.typeTasks[0].endDate = val; } } })]),
                         // D
-                        h('FormItem', { props: { label: '类型' } }, [h('Input', { props: { value: _this.typeTasks[1].type }, on: { input: (val) => { _this.typeTasks[1].type = val; } } })]),
-                        h('FormItem', { props: { label: '名称' } }, [h('Input', { props: { value: _this.typeTasks[1].name }, on: { input: (val) => { _this.typeTasks[1].name = val; } } })]),
-                        h('FormItem', { props: { label: '进度' } }, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[1].progress }, on: { input: (val) => { _this.typeTasks[1].progress = val; } } })]),
-                        h('FormItem', { props: { label: '描述' } }, [h('Input', { props: { type: 'textarea', value: _this.typeTasks[1].description }, on: { input: (val) => { _this.typeTasks[1].description = val; } } })]),
-                        h('FormItem', { props: { label: '开始时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[1].startDate }, on: { input: (val) => { _this.typeTasks[1].startDate = val; } } })]),
-                        h('FormItem', { props: { label: '结束时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[1].endDate }, on: { input: (val) => { _this.typeTasks[1].endDate = val; } } })]),
+                        h('FormItem', {}, [h('Badge', { props: { count: _this.typeTasks[1].type } })]),
+                        h('FormItem', { props: { prop: 'name' } }, [h('Input', { props: { value: _this.typeTasks[1].name }, on: { input: (val) => { _this.typeTasks[1].name = val; } } })]),
+                        h('FormItem', {}, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[1].progress }, on: { input: (val) => { _this.typeTasks[1].progress = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[1].startDate }, on: { input: (val) => { _this.typeTasks[1].startDate = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[1].endDate }, on: { input: (val) => { _this.typeTasks[1].endDate = val; } } })]),
                         // C
-                        h('FormItem', { props: { label: '类型' } }, [h('Input', { props: { value: _this.typeTasks[2].type }, on: { input: (val) => { _this.typeTasks[2].type = val; } } })]),
-                        h('FormItem', { props: { label: '名称' } }, [h('Input', { props: { value: _this.typeTasks[2].name }, on: { input: (val) => { _this.typeTasks[2].name = val; } } })]),
-                        h('FormItem', { props: { label: '进度' } }, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[2].progress }, on: { input: (val) => { _this.typeTasks[2].progress = val; } } })]),
-                        h('FormItem', { props: { label: '描述' } }, [h('Input', { props: { type: 'textarea', value: _this.typeTasks[2].description }, on: { input: (val) => { _this.typeTasks[2].description = val; } } })]),
-                        h('FormItem', { props: { label: '开始时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[2].startDate }, on: { input: (val) => { _this.typeTasks[2].startDate = val; } } })]),
-                        h('FormItem', { props: { label: '结束时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[2].endDate }, on: { input: (val) => { _this.typeTasks[2].endDate = val; } } })]),
+                        h('FormItem', {}, [h('Badge', { props: { count: _this.typeTasks[2].type } })]),
+                        h('FormItem', { props: { prop: 'name' } }, [h('Input', { props: { value: _this.typeTasks[2].name }, on: { input: (val) => { _this.typeTasks[2].name = val; } } })]),
+                        h('FormItem', {}, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[2].progress }, on: { input: (val) => { _this.typeTasks[2].progress = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[2].startDate }, on: { input: (val) => { _this.typeTasks[2].startDate = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[2].endDate }, on: { input: (val) => { _this.typeTasks[2].endDate = val; } } })]),
                         // A
-                        h('FormItem', { props: { label: '类型' } }, [h('Input', { props: { value: _this.typeTasks[3].type }, on: { input: (val) => { _this.typeTasks[3].type = val; } } })]),
-                        h('FormItem', { props: { label: '名称' } }, [h('Input', { props: { value: _this.typeTasks[3].name }, on: { input: (val) => { _this.typeTasks[3].name = val; } } })]),
-                        h('FormItem', { props: { label: '进度' } }, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[3].progress }, on: { input: (val) => { _this.typeTasks[3].progress = val; } } })]),
-                        h('FormItem', { props: { label: '描述' } }, [h('Input', { props: { type: 'textarea', value: _this.typeTasks[3].description }, on: { input: (val) => { _this.typeTasks[3].description = val; } } })]),
-                        h('FormItem', { props: { label: '开始时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[3].startDate }, on: { input: (val) => { _this.typeTasks[3].startDate = val; } } })]),
-                        h('FormItem', { props: { label: '结束时间' } }, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[3].endDate }, on: { input: (val) => { _this.typeTasks[3].endDate = val; } } })])
+                        h('FormItem', {}, [h('Badge', { props: { count: _this.typeTasks[3].type } })]),
+                        h('FormItem', { props: { prop: 'name' } }, [h('Input', { props: { value: _this.typeTasks[3].name }, on: { input: (val) => { _this.typeTasks[3].name = val; } } })]),
+                        h('FormItem', {}, [h('InputNumber', { props: { max: 100, min: 0, value: _this.typeTasks[3].progress }, on: { input: (val) => { _this.typeTasks[3].progress = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[3].startDate }, on: { input: (val) => { _this.typeTasks[3].startDate = val; } } })]),
+                        h('FormItem', {}, [h('DatePicker', { props: { type: 'datetime', format: 'yyyy-MM-dd HH:mm', value: _this.typeTasks[3].endDate }, on: { input: (val) => { _this.typeTasks[3].endDate = val; } } })])
                     ]);
                 }
             }
@@ -254,93 +252,19 @@ export default {
         },
         appendHandler (e, data) {
             let _rootThis = this;
-            let t, pTaskStart, PTaskEnd;
+            let t;
             let modalConfig = {};
             if (data) {
                 t = data.t;
-                pTaskStart = moment(data.startDate) || moment().subtract(10, 'years');
-                PTaskEnd = moment(data.endDate) || moment().add(10, 'year');
-                if (t.taskType === 't') {
-                    let inputCount = 0;
-                    let taskTypes = ['P', 'D', 'C', 'A'];
-                    let task = {};
-                    let taskList = [];
-                    // if (data.children.length !== 0) {
-                    //     _this.$Message.error('该任务不能添加子任务');
-                    //     return;
-                    // }
-                    // const startDateRule = (rule, value, callback) => {
-                    //     let startDate = moment(value, 'YYYY-MM-DD HH:mm');
-                    //     let type = task.type;
-                    //     let indexType = taskTypes.indexOf(type);
-                    //     let preTypeIndex = --indexType;
-                    //     let preTaskEndDate = taskList[preTypeIndex].endDate;
-                    //     if (startDate.isBefore(pTaskStart)) {
-                    //         callback(new Error('起始时间小于父任务起始时间'));
-                    //     } else if (indexType !== 0) {
-                    //         if (startDate.isBefore(preTaskEndDate)) {
-                    //             callback(new Error('开始时间小于前置任务起始时间'));
-                    //         }
-                    //     }
-                    // };
-                    // const endDateRule = (rule, value, callback) => {
-                    //     let endDate = moment(value, 'YYYY-MM-DD HH:mm');
-                    //     if (endDate.isBefore(PTaskEnd)) {
-                    //         callback(new Error('起始时间小于父任务起始时间'));
-                    //     }
-                    // };
-                    // let taskRule = {
-                    //     name: [{ validator: nameRule, trigger: 'blur' }],
-                    //     startDate: [{ validator: startDateRule, trigger: 'blur' }],
-                    //     endDate: [{ validator: endDateRule, trigger: 'blur' }]
-                    // };
-                    // modalConfig.loading = true;
+                if (t.taskType === 'T') {
+                    if (data.children instanceof Array && data.children.length == 4) {
+                        _rootThis.$Message.warning('该任务已存在类型任务,添加失败');
+                        return;
+                    }
                     modalConfig = _.cloneDeep(_rootThis.typeTaskModalConfig);
                     modalConfig.okText = '提交';
+                    modalConfig.width = 782;
                     modalConfig.onOk = () => {
-                        let taskType = taskTypes[inputCount];
-                        // let taskStartDate = moment(task.startDate);
-                        // let taskEndDate = moment(task.endDate);
-                        let preTask;
-                        // if (inputCount !== 0) {
-                        //     preTask = _.clone(taskList[inputCount - 1]);
-                        //     let preEndDate = moment(preTask.endDate, 'YYYY-MM-DD HH:mm');
-                        //     if (preEndDate.isAfter(taskStartDate)) {
-                        //         _this.$Message.error({ content: '时间验证错误' });
-                        //         return;
-                        //     }
-                        // }
-                        // if (taskEndDate.isAfter(PTaskEnd) || taskStartDate.isBefore(pTaskStart)) {
-                        //     _this.$Message.error({ content: '时间验证错误' });
-                        //     return;
-                        // }
-                        // taskList.push(preTask);
-                        // task.name = '';
-                        // task.description = '';
-                        // task.moment = moment.form('YYYY-MM-DD HH:mm');
-                        // task.type = taskType;
-                        // if (inputCount === 3) {
-                        //     axios.post('task/add', taskList).then((res) => {
-                        //         let data = res.data;
-                        //         if (!data.status) {
-                        //             throw new Error('添加异常');
-                        //         }
-                        //         _rootThis.$Message.info('添加成功');
-                        //         _rootThis.$Modal.remove();
-                        //     }).then((e) => {
-                        //         _rootThis.$Message.error({ content: '添加失败' });
-                        //     });
-                        // }
-                        // ++inputCount;
-                        // _rootThis.typeTask.projectId = '';
-                        // _rootThis.typeTask.pTaskId = '';
-                        // _rootThis.typeTask.name = '';
-                        // _rootThis.typeTask.progress = '';
-                        // _rootThis.typeTask.description = '';
-                        // _rootThis.typeTask.startDate = new Date();
-                        // _rootThis.typeTask.endDate = new Date();
-                        // this.okText = '添加下一条';
-                        // if (inputCount === 2) { this.okText = '提交'; }
                         for (let i = 0; i < 4; ++i) {
                             _rootThis.typeTasks[i].pTaskId = t.id;
                             _rootThis.typeTasks[i].startDate = moment(_rootThis.typeTasks[i].startDate).format('YYYY-MM-DD HH:mm:ss');
@@ -381,39 +305,28 @@ export default {
                 let rootTask = _.clone(_rootThis.task);
                 let progressSum = 0;
                 _.forEach(rootTask, (t) => {
-                    progressSum += t.progress;
+                    progressSum += parseInt(t.t.nodeProgress);
                 });
                 if (progressSum >= 100) {
-                    this.$Message.error('根任务添加失败');
+                    this.$Message.error(`任务进度已存在${progressSum}/100,新建失败`);
                     return;
                 }
                 modalConfig = _.cloneDeep(_rootThis.taskModalConfig);
                 modalConfig.onOk = () => {
+                    // if ()
                     _rootThis.addNormalTask('r');// 推送任务至后端
                 };
                 modalConfig.okText = '添加';
             }
             _rootThis.$Modal.confirm(modalConfig);
-            // axios.get(`/task/add/${data.t.type}`, { params: { taskId: data.t.id } }).then((response) => {
-            //     let data = response.data;
-            //     if (!data.status) {
-            //         throw new Error('添加失败');
-            //     }
-            //     if (!data.canAdd) {
-            //         _this.$Message.infor('不能添加');
-            //         return;
-            //     }
-            //     const children = data.children || [];
-            //     children.push({
-            //         title: 'appended node',
-            //         expand: true
-            //     });
-            //     _this.$set(data, 'children', children);
-            // }).catch();
         },
         remove (root, node, data) {
             let _this = this;
-            console.log(JSON.stringify(data, null, 4));
+            let notDeleteType = ['P', 'D', 'C', 'A'];
+            if (data.t.progress === '100' || notDeleteType.indexOf(data.t.taskType) !== -1) {
+                _this.$Message.warning('任务依赖其他任务,删除失败');
+                return;
+            }
             this.$Modal.confirm({
                 content: '确认删除',
                 onOk: () => {
