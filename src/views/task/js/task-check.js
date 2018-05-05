@@ -12,6 +12,7 @@ export default {
     data () {
         let _this = this;
         return {
+            isReadonlyForm: true,
             projects: [],
             selectProject: '',
             task: [],
@@ -181,8 +182,16 @@ export default {
     methods: {
         treeSelectHandler (item) {
             let t = item.t;
+
             for (let key in t) {
-                this.showTask[key] = t[key] || '';
+                if (key.indexOf('Date') == -1) {
+                    this.showTask[key] = t[key] || '';
+                } else {
+                    this.showTask[key] = t[key] ? new Date(t[key]) : null;
+                }
+            }
+            if (item.children) {
+                this.showTask.childNum = item.children.length;
             }
         },
         renderTaskTree (h, { root, node, data }) {
@@ -248,7 +257,6 @@ export default {
             ]);
         },
         titleClickHandler (a, b, c, d) {
-            console.log(this, a, b, c, d);
         },
         appendHandler (e, data) {
             let _rootThis = this;
@@ -361,9 +369,18 @@ export default {
                         throw new Error('项目加载失败');
                     }
                     _this.projects = data.data;
-
-                    let firstProject = _.take(data.data, 1)[0];
-                    _this.selectProject = firstProject.projectID;
+                    if (!_this.selectProject) {
+                        let firstProject = _.take(data.data, 1)[0];
+                        _this.selectProject = firstProject.projectID;
+                    } else {
+                        axios.get('/task/tree', { params: { projectID: _this.selectProject } }).then((r) => {
+                            let taskData = r.data;
+                            if (!taskData.status) {
+                                throw new Error('任务加载异常');
+                            }
+                            _this.task = taskData.data;
+                        });
+                    }
                 }
             ).catch((e) => {
                 _this.$Message.error({ content: e.stack, duration: 0, closable: true });
@@ -404,6 +421,22 @@ export default {
                 _this.getData();
             }).catch((e) => {
                 _this.$Message.error({ content: e.stack, duration: 0, closable: true });
+            });
+        },
+        modify () {
+            if (this.showTask.taskType) { this.isReadonlyForm = false; }
+        },
+        submit () {
+            let _this = this;
+            axios.put('/task/update', this.showTask).then((res) => {
+                let data = res.data;
+                if (!data.status) {
+                    throw new Error('更新失败');
+                }
+                _this.isReadonlyForm = true;
+                _this.getData();
+            }).catch((e) => {
+                _this.$Message.error(e.stack);
             });
         }
     },

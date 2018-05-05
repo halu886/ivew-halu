@@ -44,28 +44,27 @@ export default {
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
-                    })
-                        .then(function (response) {
-                            let data = response.data;
-                            if (data.status) {
-                                _this.$store.state.user.userInfo = {
-                                    name: _this.form.userName,
-                                    password: _this.form.password
-                                };
-                                Cookies.set('user', _this.form.userName);
-                                Cookies.set('password', _this.form.password);
-                                Cookies.set('role', data.role[0] || 'guest');
-                                _this.$store.commit(
-                                    'setAvator',
-                                    'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3448484253,3685836170&fm=27&gp=0.jpg'
-                                );
-                                Cookies.set('access', 0);
+                    }).then(function (response) {
+                        let data = response.data;
+                        if (data.status) {
+                            _this.$store.state.user.userInfo = {
+                                name: _this.form.userName,
+                                password: _this.form.password
+                            };
+                            Cookies.set('user', _this.form.userName);
+                            // Cookies.set('password', _this.form.password);
+                            Cookies.set('role', data.role[0] || 'guest');
+                            _this.$store.commit(
+                                'setAvator',
+                                'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3448484253,3685836170&fm=27&gp=0.jpg'
+                            );
+                            Cookies.set('access', 0);
 
-                                _this.$router.push({
-                                    name: 'home_index'
-                                });
-                            }
-                        }).catch(function (error) { console.error(error); });
+                            _this.$router.push({
+                                name: 'home_index'
+                            });
+                        }
+                    }).catch(function (error) { console.error(error); });
                 }
             });
         }

@@ -24,50 +24,48 @@
             </Col>
             <Col span="19">
             <Card>
-                <Form :model="showTask">
-                    <FormItem prop="showTask.name">
-                        <Input type="text" v-model="showTask.name" placeholder="任务名称" disabled>
-                        <Icon type="ios-person-outline" slot="prepend"></Icon>
+                <Form :model="showTask" :label-width="120">
+                    <FormItem prop="showTask.taskType" label="任务类型">
+                        <Input type="text" v-model="showTask.taskType" placeholder="任务类型" :readonly='true'></Input>
+                    </FormItem>
+                    <FormItem prop="showTask.name" label="任务名称">
+                        <Input type="text" v-model="showTask.name" placeholder="任务名称" :readonly='this.isReadonlyForm'>
+
                         </Input>
                     </FormItem>
-                    <FormItem prop="showTask.description">
-                        <Input type="text" v-model="showTask.description" placeholder="任务描述" disabled>
-                        <Icon type="ios-locked-outline" slot="prepend"></Icon>
+                    <FormItem prop="showTask.description" label="任务描述">
+                        <Input type="textarea" v-model="showTask.description" placeholder="任务描述" :readonly='this.isReadonlyForm'>
+
                         </Input>
                     </FormItem>
-                    <FormItem prop="showTask.createDate">
-                        <Input type="text" v-model="showTask.createDate" placeholder="任务创建时间" disabled>
-                        <Icon type="ios-person-outline" slot="prepend"></Icon>
+                    <FormItem prop="showTask.createDate" label="任务创建时间">
+                        <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" v-model="showTask.createDate" placeholder="任务创建时间" :readonly='true'>
+
+                        </DatePicker>
+                    </FormItem>
+                    <FormItem prop="showTask.nodeProgress" label="任务节点进度">
+                        <Input type="text" v-model="showTask.nodeProgress" placeholder="任务节点进度" :readonly='true'>
+
                         </Input>
                     </FormItem>
-                    <FormItem prop="showTask.nodeProgress">
-                        <Input type="text" v-model="showTask.nodeProgress" placeholder="任务节点进度" disabled>
-                        <Icon type="ios-person-outline" slot="prepend"></Icon>
+                    <FormItem prop="showTask.progress" label="任务当前进度">
+                        <Input type="text" v-model="showTask.progress" placeholder="任务当前进度" :readonly='true'>
+
                         </Input>
                     </FormItem>
-                    <FormItem prop="showTask.progress">
-                        <Input type="text" v-model="showTask.progress" placeholder="任务当前进度" disabled>
-                        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-                        </Input>
+                    <FormItem prop="showTask.endDate" label="任务开始时间">
+                        <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" v-model="showTask.startDate" placeholder="任务开始时间" :readonly='this.isReadonlyForm'>
+
+                        </DatePicker>
                     </FormItem>
-                    <FormItem prop="showTask.startDate">
-                        <Input type="text" v-model="showTask.startDate" placeholder="任务名称" disabled>
-                        <Icon type="ios-person-outline" slot="prepend"></Icon>
-                        </Input>
+                    <FormItem prop="showTask.endDate" label="任务结束时间">
+                        <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" v-model="showTask.endDate" placeholder="任务结束时间" :readonly='this.isReadonlyForm'>
+
+                        </DatePicker>
                     </FormItem>
-                    <FormItem prop="showTask.endDate">
-                        <Input type="text" v-model="showTask.endDate" placeholder="任务结束时间" disabled>
-                        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-                        </Input>
-                    </FormItem>
-                    <FormItem prop="showTask.taskType">
-                        <Input type="text" v-model="showTask.taskType" placeholder="任务类型" disabled>
-                        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-                        </Input>
-                    </FormItem>
-                    <FormItem prop="showTask.childNum">
-                        <Input type="text" v-model="showTask.childNum" placeholder="任务子任务数量" disabled>
-                        <Icon type="ios-person-outline" slot="prepend"></Icon>
+                    <FormItem prop="showTask.childNum" label="子任务数量">
+                        <Input type="text" v-model="showTask.childNum" placeholder="子任务数量" :readonly='true'>
+
                         </Input>
                     </FormItem>
                     <FormItem>
