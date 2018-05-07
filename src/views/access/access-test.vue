@@ -1,17 +1,27 @@
 <template>
   <div>
-    <Card shadow>
-      <p>当前用户的权限值是 0 时，才可以看到这个页面。</p>
-    </Card>
+    <Row>
+      <Col>
+      <Card>
+        <Button type="primary" icon="ios-search">新增用户</Button>
+      </Card>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+      <Card>
+        <Table border :columns="columns" :data="users"></Table>
+      </Card>
+      </Col>
+    </Row>
   </div>
 </template>
 
 <script>
-export default {
-
-};
+import js from "./access-test.js";
+export default js;
 </script>
 
 <style>
-  
+
 </style>
