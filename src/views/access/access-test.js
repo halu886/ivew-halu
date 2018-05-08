@@ -78,34 +78,33 @@ export default {
         addUserHandler () {
             this.$Modal.confirm({
                 render: (h) => {
-                    return h('div', {}, [
-                        h('input'), {
-                            props: {
-                                value: this.addUser.name,
-                                autofocus: true,
-                                placeholder: 'Please enter your name...'
-                            },
-                            on: {
-                                input: (val) => {
-                                    this.addUser.name = val;
-                                }
-                            }
+                    return h('div', {}, [h('Input', {
+                        props: {
+                            value: this.addUser.name,
+                            autofocus: true,
+                            placeholder: 'Please enter your name...'
                         },
-                        h('input'), {
-                            props: {
-                                value: this.addUser.password,
-                                placeholder: 'Please enter your password...'
-                            },
-                            on: {
-                                input: (val) => {
-                                    this.addUser.password = val;
-                                }
+                        on: {
+                            input: (val) => {
+                                this.addUser.name = val;
                             }
-                        }]);
+                        }
+                    }), h('Input', {
+                        props: {
+                            value: this.addUser.password,
+                            placeholder: 'Please enter your password...',
+                            type: 'password'
+                        },
+                        on: {
+                            input: (val) => {
+                                this.addUser.password = val;
+                            }
+                        }
+                    })]);
                 },
                 onOk: () => {
                     let _this = this;
-                    axios.post('/user/add', { user: this.addUser.name, password: this.addUser.password, role: 'normalUser' }).then((res) => {
+                    axios.post('/user/register', { name: this.addUser.name, password: this.addUser.password, role: 'normalUser' }).then((res) => {
                         let data = res.data;
                         if (!data.status) {
                             throw new Error('新增失败');

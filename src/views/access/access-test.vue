@@ -3,7 +3,7 @@
     <Row>
       <Col>
       <Card>
-        <Button type="primary" icon="ios-search">新增用户</Button>
+        <Button type="primary" icon="ios-search" @click="addUserHandler">新增用户</Button>
       </Card>
       </Col>
     </Row>
