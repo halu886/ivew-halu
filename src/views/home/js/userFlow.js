@@ -70,10 +70,10 @@ export default {
                 throw Error('加载失败');
             }
             let userFlow = echarts.init(document.getElementById('user_flow'));
-            option.series[0].max = (1 + (parseInt(data.data['unHandler'] / 100))) * 100;
+            option.series[0].max = (1 + (parseInt(data.data['unHandler'] || 0 / 100))) * 100;
             option.series[0].data[0].value = data.data['unHandler'] || 0;
             option.series[1].data[0].value = data.data['handler'] || 0;
-            option.series[1].max = (1 + parseInt(data.data['handler'] / 100)) * 100;
+            option.series[1].max = (1 + parseInt(data.data['handler'] || 0 / 100)) * 100;
             userFlow.setOption(option);
 
             window.addEventListener('resize', function () {

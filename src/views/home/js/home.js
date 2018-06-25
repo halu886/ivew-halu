@@ -89,8 +89,12 @@ export default {
             axios.get('/user/countOfIndex').then(response => {
                 let result = response.data;
                 if (result.status) {
-                    _this.task = result.data.task;
-                    _this.project = result.data.project;
+                    if (result.data.task && result.data.task.handler && result.data.task.unHandler) {
+                        _this.task = result.data.task;
+                    }
+                    if (result.data.project && result.data.project.handler && result.data.project.unHandler) {
+                        _this.project = result.data.project;
+                    }
                 }
             }).catch((e) => {
                 // alert(e);
