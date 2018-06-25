@@ -1,6 +1,6 @@
-#PDCA前端工程
+# PDCA前端工程
 ## 说明
-该系统是由[ivewUI模板](https://github.com/iview/iview-admin "ivewUI模板")整合再进行修改并结合[PDCA(后台)](https://github.com/halu886/ivew-halu "PDCA(后台)")接口实现联动.
+该系统是由[ivewUI模板](https://github.com/iview/iview-admin "ivewUI模板")整合再进行修改并结合[PDCA(后台)](https://github.com/halu886/pdca "PDCA(后台)")接口实现联动.
 
 ## 效果图  
 ### 登入界面
