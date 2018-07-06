@@ -10,7 +10,7 @@ import 'iview/dist/styles/iview.css';
 import VueI18n from 'vue-i18n';
 import util from './libs/util';
 
-axios.defaults.baseURL = 'http://localhost:8081';
+axios.defaults.baseURL = 'http://halu886.cn:8080/PDCAProject/';
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.withCredentials = true;
 axios.interceptors.response.use((response) => {
